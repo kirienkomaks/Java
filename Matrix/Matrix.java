@@ -21,7 +21,7 @@ public class Matrix {
         for (int i=0;i<M;i++)
             for (int j=0;j<N;j++)
 
-        data[M*N]=value;
+                data[M*N]=value;
     }
 
     public Matrix(double[][] d) {
@@ -53,6 +53,14 @@ public class Matrix {
 
 
         return m;
+    }
+    public double frobenius(){
+        double wynik=0;
+        for(int i=0;i<M*N;i++){
+            wynik+=data[i]*data[i];
+        }
+        return wynik;
+
     }
 
     public void setData(double[][] data) {
@@ -87,8 +95,6 @@ public class Matrix {
             for (int j = 0; j < N; j++)
                 System.out.printf(" | %f | ", data[M*i+j]);
             System.out.println();
-
-
         }
         System.out.println();
         System.out.println();
@@ -103,9 +109,25 @@ public class Matrix {
         return C;
     }
 
+    public String toString(){
+        StringBuilder buf = new StringBuilder();
+        buf.append("[");
+        for(int i=0;i<M;i++){
+            for (int j = 0; j < N; j++) {
+                buf.append("[");
+                buf.append(data[M * i + j]);
+                buf.append("]");
+            }
+        }
+        buf.append("]");
+        return buf.toString();
+    }
 
+    void reshape(int newRows,int newCols){
+        if(M*N != newRows*newCols)
+            throw new RuntimeException(String.format("%d x %d matrix can't be reshaped to %d x %d",M,N,newRows,newCols));
 
-
+    }
     public Matrix sub(Matrix B) {
         Matrix A = this;
         if (B.M != A.M || B.N != A.N) throw new RuntimeException("Illegal matrix dimensions.");
@@ -153,9 +175,16 @@ public class Matrix {
         Matrix z = new Matrix(3,3);
         z.show();
         //Matrix m = new Matrix(new double[][]{{1,2,3,4},{5,6},{7,8},{9}});
+        Matrix m = new Matrix(new double[][]{{1,2,3},{1,2,3},{1,2,3}});
+        double a=m.frobenius();
+        System.out.printf("%f",a);
+        System.out.println();
 
+        System.out.print("tostring");
+        m.toString();
         Matrix r = Matrix.random(4, 4);
         r.show();
+
         System.out.println();
         Matrix s = Matrix.random(4, 4);
         s.show();
@@ -199,4 +228,3 @@ public class Matrix {
         System.out.println();
     }
 }
-
