@@ -1,59 +1,19 @@
+import java.lang.Object;
+import     java.io.OutputStream;
+import    java.io.FilterOutputStream;
 import    java.io.PrintStream;
+import java.util.Random;
+import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
 
-
-public class Document  {
-    String title;
-    Photo photo;
-    List<String> sections = new ArrayList<String>();
-
-    public Document(String s) {
-            this.title=s;
-    }
-
-
-    String Document(String title) {
-        this.title=title;
-        return title;
-    }
-
-    Document setTitle(String title){
-        this.title = title;
-        return this;
-    }
-
-    Document setPhoto(String photoUrl){
-
-        return this;
-    }
-
-    Section addSection(String sectionTitle){
-        sections.add(sectionTitle);
-
-        return (Section) sections;
-    }
-    Document addSection(Section s){
-        return this;
+public class Photo extends Document{
+    private String url;
+    Photo(String url){
+        super(url);
+        this.url =url;
     }
 
     void writeHTML(PrintStream out){
-        // zapisz niezbędne znaczniki HTML
-        // dodaj tytuł i obrazek
-        // dla każdej sekcji wywołaj section.writeHTML(out)
+        out.printf("<img src=\"%s\" alt=\"Smiley face\" height=\"42\" width=\"42\"/>\n",url);
     }
-    public static void main(String args[]){
-        Document cv = new Document("Jana Kowalski - CV");
-        cv.setPhoto("...");
-        cv.addSection("Wykształcenie")
-                .addParagraph("2000-2005 Przedszkole im. Królewny Snieżki w ...")
-                .addParagraph("2006-2012 SP7 im Ronalda Regana w ...")
-                .addParagraph("...");
-        cv.addSection("Umiejętności");
-
-        cv.writeHTML(System.out);
-        ;
 }
-
-}
-
