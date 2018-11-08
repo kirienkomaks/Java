@@ -1,0 +1,15 @@
+import java.io.PrintStream;
+
+public class Paragraph extends Section{
+    String paragraph;
+    Paragraph(String s) {
+        super(s);
+    }
+    Paragraph setcContent(){
+
+        return this;
+    };
+    void writeHTML(PrintStream out){
+
+    }
+}
