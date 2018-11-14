@@ -1,4 +1,6 @@
-import    java.io.PrintStream;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -6,10 +8,13 @@ import java.util.ArrayList;
 public class Document  {
     String title;
     Photo photo;
-    List<String> sections = new ArrayList<String>();
+    List<Section> sections = new ArrayList<>();
 
     public Document(String s) {
-            this.title=s;
+        this.title=s;
+    }
+
+    public Document() {
     }
 
 
@@ -24,36 +29,51 @@ public class Document  {
     }
 
     Document setPhoto(String photoUrl){
-
+        photo = new Photo(photoUrl);
         return this;
     }
 
     Section addSection(String sectionTitle){
-        sections.add(sectionTitle);
-
-        return (Section) sections;
+        Section sect = new Section();
+        sect.setTitle(sectionTitle);
+        sections.add(sect);
+        return sect;
     }
     Document addSection(Section s){
+
         return this;
     }
 
     void writeHTML(PrintStream out){
         // zapisz niezbędne znaczniki HTML
+
+        out.printf("<?xml version=\"1.0\"?>\n");
+        out.printf("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n" +
+                "       \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
+        out.printf("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
+        out.printf("<head>\n" +
+                "\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n" +
+                "\t<title>CV</title>\n" +
+                "</head>\n");
+        out.printf("<body>\n");
+        out.printf("<p> %s  </p>\n",title);
+        //out.printf(photo.writeHTML());
+
+        photo.writeHTML(out);
+        for(Section t:sections){
+            t.writeHTML(out);
+            for(Paragraph p:t.paragraps){
+                p.writeHTML(out);
+            }
+        }
+
+        out.printf("</body>\n</html>\n");
+
         // dodaj tytuł i obrazek
         // dla każdej sekcji wywołaj section.writeHTML(out)
-    }
-    public static void main(String args[]){
-        Document cv = new Document("Jana Kowalski - CV");
-        cv.setPhoto("...");
-        cv.addSection("Wykształcenie")
-                .addParagraph("2000-2005 Przedszkole im. Królewny Snieżki w ...")
-                .addParagraph("2006-2012 SP7 im Ronalda Regana w ...")
-                .addParagraph("...");
-        cv.addSection("Umiejętności");
 
-        cv.writeHTML(System.out);
-        ;
-}
+    }
+
 
 }
 
