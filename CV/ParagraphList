@@ -1,13 +1,23 @@
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ParagraphList {
-    String item;
-   String addListItem(String it){
-
-       return item;
-   };
-    void writeHTML(PrintStream out){
-
+public class ParagraphWithList extends Paragraph {
+    List<ListItem> un = new ArrayList<>();
+    public ParagraphWithList(String tr) {
+        super(tr);
     }
-
+    ParagraphWithList addItem(String item){
+        ParagraphWithList list = new ParagraphWithList(item);
+        paragraps.add(list);
+        return this;
+    }
+    ParagraphWithList setContent(String tr){
+        this.paragraph=tr;
+        return this;
+    };
+    void writeHTML(PrintStream out) {
+        out.printf("<lo> %s </lo>", un, "utf-8");
+    }
 }
+
