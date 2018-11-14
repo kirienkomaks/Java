@@ -1,15 +1,21 @@
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Paragraph extends Section{
     String paragraph;
+    List<ParagraphWithList> List = new ArrayList<>();
     Paragraph(String s) {
-        super(s);
-    }
-    Paragraph setcContent(){
 
+        this.paragraph=s;
+        //System.out.println(s);
+    }
+    Paragraph setContent(String tr){
+        ParagraphWithList list = new ParagraphWithList(tr);
+        paragraps.add(list);
         return this;
     };
     void writeHTML(PrintStream out){
-
+        out.printf("<p> %s </p>\n",paragraph,"utf-8");
     }
 }
