@@ -1,18 +1,17 @@
 import java.io.*;
-import java.lang.Object;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class CSVReader {
+
     BufferedReader reader;
     String delimiter;
     boolean hasHeader;
     List<String> columnLabels = new ArrayList<>();
     // odwzorowanie: nazwa kolumny -> numer kolumny
-    Map<String,Integer> columnLabelsToInt = new HashMap<>();
+    HashMap<String, Integer> columnLabelsToInt = new HashMap<>();
     /**
      *
      * @param filename - nazwa pliku
@@ -26,25 +25,39 @@ public class CSVReader {
         this.hasHeader = hasHeader;
         if(hasHeader)parseHeader();
     }
+    public CSVReader(String filename,String delimiter) throws IOException {
+        reader = new BufferedReader(new FileReader(filename));
+        this.delimiter = delimiter;
+        this.hasHeader = true;
+        if(hasHeader)parseHeader();
+    }
+    public CSVReader(String filename) throws IOException {
+        reader = new BufferedReader(new FileReader(filename));
+        this.delimiter = ";";
+        this.hasHeader = true;
+        if(hasHeader)parseHeader();
+    }
+    public CSVReader(Reader reader, String delimiter, boolean hasHeader) throws IOException {
+        reader = new BufferedReader(reader);
+        this.delimiter = ";";
+        this.hasHeader = true;
+        if(hasHeader)parseHeader();
+    }
     String[]current;
     boolean next() throws IOException {
-        // czyta następny wiersz, dzieli na elementy i przypisuje do current
-        //
+
         String line = reader.readLine();
         if (line == null) {
             return false;
         }
-
-        // podziel na pola
         String[] header = line.split(delimiter);
-        // przetwarzaj dane w wierszu
-        for (int i = 0; i < header.length; i++) {
-            columnLabels.add(header[i]);
+        current=new String[header.length];
 
-            columnLabelsToInt.put(header[i], i);
+        for (int i = 0; i < header.length; i++) {
+            current[i]=header[i];
         }
         return true;
-        }
+    }
     private void parseHeader() throws IOException {
         // wczytaj wiersz
         String line  = reader.readLine();
@@ -56,53 +69,119 @@ public class CSVReader {
         // przetwarzaj dane w wierszu
         for(int i=0;i<header.length;i++){
             columnLabels.add(header[i]);
-
             columnLabelsToInt.put(header[i],i);
-
         }
 
-        }
-
+    }
     int getRecordLength(){
-
-        return delimiter.length();
+        return current.length;
     }
     List<String> getColumnLabels(){
-
         return columnLabels;
     }
     boolean isMissing(int columnIndex){
-
-
-        return columnLabelsToInt.containsKey(columnIndex);
+        if (current[columnIndex]!=null){
+            return true;
+        }
+        if(current[columnIndex]==null) return false;
+        return false;
     }
     boolean isMissing(String columnLabel){
-        return columnLabelsToInt.containsValue(columnLabel);
-
+        int a=columnLabelsToInt.get(columnLabel);
+        if (current[a]!=null || current[a]!="" || current[a]!=" "){
+            return true;
+        }
+        return false;
     }
-
     int getInt(int columnIndex){
-        return columnLabelsToInt.get(columnIndex);
+        return Integer.parseInt(current[columnIndex]);
     }
     int getInt(String columnLabel){
-        return columnLabelsToInt.get(columnLabel);
+        int a=columnLabelsToInt.get(columnLabel);
+        return Integer.parseInt(current[a]);
     }
     long getLong(int columnIndex){
-        return columnLabelsToInt.get(columnIndex);
+        return Long.parseLong(current[columnIndex]);
     }
     long getLong(String columnLabel){
-        return columnLabelsToInt.get(columnLabel);
+        int a=columnLabelsToInt.get(columnLabel);
+        return Long.parseLong(current[a]);
     }
     double getDouble(int columnIndex){
-        return columnLabelsToInt.get(columnIndex);
+        return Double.parseDouble(current[columnIndex]);
+    }
+    double getDouble(String  columnLabel){
+        int a=columnLabelsToInt.get(columnLabel);
+        return Double.parseDouble(current[a]);
+    }
+    String get(int columnint){
+            return current[columnint];
+    }
+    String get(String columnLabel){
+        int a=columnLabelsToInt.get(columnLabel);
+        return current[a];
+    }
+
+    public static void main(String[] args) throws IOException {
+        CSVReader reader = new CSVReader("with-header.csv",";",true);
+        while(reader.next()){
+            int id = reader.getInt(0);
+            int ids = reader.getInt("nrdomu");
+            int dl = reader.getRecordLength();
+            String name = reader.get(1);
+            String names = reader.get("nazwisko");
+            Boolean b = reader.isMissing(2);
+            Boolean bs = reader.isMissing("ulica");
+            double fare = reader.getDouble("nrdomu");
+
+            System.out.printf(Locale.US,"%d %s %s %f ",id, name,names,fare);
+
+            System.out.printf(" %d ",reader.getInt("nrdomu"));
+            System.out.printf("             Długość rekordu = %d ",dl);
+
+            System.out.printf("  IsMissing= %s  ",String.valueOf(b));
+            System.out.printf("  IsMissingS= %s  ",String.valueOf(bs));
+            System.out.println();
+        }
+        System.out.printf("%s",reader.getColumnLabels());
+        System.out.println();
+        System.out.println();
+        System.out.println();
+
+        //System.out.printf("%d",reader.getInt("nrdomu"));
+        System.out.println();
+        CSVReader plik2 = new CSVReader("no-header.csv",";",false);
+        while(plik2.next()) {
+            int id = plik2.getInt(0);
+            int dl = plik2.getRecordLength();
+            String name = plik2.get(1);
+            Boolean b = plik2.isMissing(1);
+            System.out.printf(Locale.US,"%d %d %s %s ",id, dl,name,b);
+            System.out.println();
+        }
+
+        CSVReader plik3 = new CSVReader("missing-values.csv",";",true);
+        while(plik3.next()) {
+            //int id = plik3.getInt(1);
+            int dl = plik3.getRecordLength();
+            String name = plik3.get(1);
+            Boolean b = plik3.isMissing(2);
+            System.out.printf(Locale.US,"%d %s %s ",dl,name,b);
+
+            System.out.println();
+        }
+        
+        System.out.println();
+        System.out.println();
+
+        String text = "a,b,c,123.4,567.8,91011.12";
+        CSVReader reader1 = new CSVReader(new StringReader(text),",",false);
+        while(reader1.next()) {
+            System.out.printf("%s",reader1.getColumnLabels());
+            String name = reader1.get(0);
+            System.out.printf("%s",name);
+
+        }
 
     }
-    double getDouble(String  columnLable){
-        return (double)columnLabelsToInt.get(columnLable);
-
-    }
-
-
-
-
 }
