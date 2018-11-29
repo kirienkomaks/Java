@@ -11,10 +11,10 @@ public class AdminUnitList {
         while(reader.next()) {
             AdminUnit adm = new AdminUnit();
             String name = reader.get("name");
-            int adl = reader.getInt("admin_level");
-            double pop = reader.getDouble("population");
+            int adl = !reader.isMissing("admin_level")?reader.getInt("admin_level"):0;
+            double pop = !reader.isMissing("population")?reader.getDouble("population"):0;
             double area = reader.getDouble("area");
-            double density = reader.getDouble("density");
+            double density = !reader.isMissing("density")?reader.getDouble("density"):0;
             adm.name=name;
             adm.adminLevel=adl;
             adm.population=pop;
@@ -78,3 +78,5 @@ public class AdminUnitList {
 
     }
 }
+
+
