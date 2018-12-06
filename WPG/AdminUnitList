@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.lang.Math;
 
 public class AdminUnitList {
     List<AdminUnit> units = new ArrayList<>();
@@ -20,13 +21,27 @@ public class AdminUnitList {
             int adl = reader.isMissing(3)?reader.getInt(3):0;
             String name = reader.get("name");
 
-            double pop = reader.isMissing("population")?reader.getDouble("population"):0;
+            //double pop = reader.isMissing("population")?reader.getDouble("population"):0;
             double area = reader.isMissing(5)?reader.getDouble(5):1;
             double density = reader.isMissing(6)?reader.getDouble(6):0;
             long parrent = reader.isMissing("parent")?reader.getLong("parent"):0;
+            double x1 = reader.getDouble("x1");
+            double y1 = reader.getDouble("y1");
+            double x2 = reader.getDouble("x2");
+            double y2 = reader.getDouble("y2");
+            double x3 = reader.getDouble("x3");
+            double y3 = reader.getDouble("y3");
+            double x4 = reader.getDouble("x4");
+            double y4 = reader.getDouble("y4");
+            double x5 = reader.getDouble("x5");
+            double y5 = reader.getDouble("y5");
+            adm.bbox.xmin=min(x1,x2,x3,x4,x5);
+            adm.bbox.ymin=min(y1,y2,y3,y4,y5);
+            adm.bbox.xmax=max(x1,x2,x3,x4,x5);
+            adm.bbox.ymax=max(y1,y2,y3,y4,y5);
             adm.name=name;
             adm.adminLevel=adl;
-            adm.population=pop;
+            //adm.population=pop;
             adm.area=area;
             adm.density=density;
             adm.par=parrent;
@@ -34,8 +49,34 @@ public class AdminUnitList {
             units.add(adm);
 
 
+            System.out.printf(Locale.US,"LINESTRING(%f %f, %f %f, %f %f, %f %f, %f %f)",
+                    reader.getDouble("x1"),
+                    reader.getDouble("y1"),
+                    reader.getDouble("x2"),
+                    reader.getDouble("y2"),
+                    reader.getDouble("x3"),
+                    reader.getDouble("y3"),
+                    reader.getDouble("x4"),
+                    reader.getDouble("y4"),
+                    reader.getDouble("x5"),
+                    reader.getDouble("y5")
+            );
+            System.out.println();
+
         }
 
+    }
+    double min(double x1,double x2,double x3,double x4, double x5){
+        double min1=Math.min(x1,x2);
+        double min2=Math.min(x3,x4);
+        double min3=Math.min(min1,min2);
+        return Math.min(min3,x5);
+    }
+    double max(double x1,double x2,double x3,double x4, double x5){
+        double min1=Math.max(x1,x2);
+        double min2=Math.max(x3,x4);
+        double min3=Math.max(min1,min2);
+        return Math.max(min3,x5);
     }
 
     void getmap(long key){
@@ -85,4 +126,3 @@ public class AdminUnitList {
         System.out.printf(String.valueOf(lista.mapa));
     }
 }
-
