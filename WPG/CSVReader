@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class CSVReader extends AdminUnitList {
+public class CSVReader{
 
     BufferedReader reader;
     String delimiter;
@@ -12,12 +12,6 @@ public class CSVReader extends AdminUnitList {
     List<String> columnLabels = new ArrayList<>();
     // odwzorowanie: nazwa kolumny -> numer kolumny
     HashMap<String, Integer> columnLabelsToInt = new HashMap<>();
-    /**
-     *
-     * @param filename - nazwa pliku
-     * @param delimiter - separator pól
-     * @param hasHeader - czy plik ma wiersz nagłówkowy
-     */
 
     public CSVReader(String filename,String delimiter,boolean hasHeader) throws IOException {
         reader = new BufferedReader(new FileReader(filename));
@@ -54,6 +48,7 @@ public class CSVReader extends AdminUnitList {
         current=new String[header.length];
 
         for (int i = 0; i < header.length; i++) {
+            //System.out.printf("%d",header.length);
             current[i]=header[i];
         }
         return true;
@@ -80,72 +75,82 @@ public class CSVReader extends AdminUnitList {
         return columnLabels;
     }
     boolean isMissing(int columnIndex){
-        if (current[columnIndex]!=null){
-            return true;
+        if (columnIndex>current.length){
+            return false;
         }
-        if(current[columnIndex]==null) return false;
-        return false;
+        if (columnIndex<current.length && current[columnIndex].isEmpty()){
+            return false;
+        }
+        return true;
     }
     boolean isMissing(String columnLabel){
         int a=columnLabelsToInt.get(columnLabel);
-        if (current[a]!=null || current[a]!="" || current[a]!=" "){
-            return true;
+        if (a>current.length){
+            return false;
         }
-        return false;
+        if (a<current.length && current[a].isEmpty()) {
+            return false;
+        }
+        return true;
     }
     int getInt(int columnIndex){
+        if (columnIndex>current.length){
+            return 0;
+        }
         return Integer.parseInt(current[columnIndex]);
     }
     int getInt(String columnLabel){
         int a=columnLabelsToInt.get(columnLabel);
+        if (a>current.length){
+            return 0;
+        }
         return Integer.parseInt(current[a]);
     }
     long getLong(int columnIndex){
+        if (columnIndex>current.length){
+            return 0;
+        }
         return Long.parseLong(current[columnIndex]);
     }
     long getLong(String columnLabel){
         int a=columnLabelsToInt.get(columnLabel);
+        if (a>current.length){
+            return 0;
+        }
         return Long.parseLong(current[a]);
     }
     double getDouble(int columnIndex){
+
+            if (columnIndex>current.length){
+                return 0;
+            }
         return Double.parseDouble(current[columnIndex]);
     }
+
     double getDouble(String  columnLabel){
         int a=columnLabelsToInt.get(columnLabel);
-        return Double.parseDouble(current[a]);
+
+        if (a+1>current.length){
+
+            return 0;
+        }
+        return Double.parseDouble(current[a+1]);
     }
+
     String get(int columnint){
+        if (columnint>current.length){
+
+            return "0";
+        }
         return current[columnint];
     }
     String get(String columnLabel){
         int a=columnLabelsToInt.get(columnLabel);
+        if (a>current.length){
+
+            return "0";
+        }
         return current[a];
     }
 
-    public static void main(String[] args) throws IOException {
-        CSVReader reader = new CSVReader("admin-units.csv",",",true);
-        while(reader.next()){
-            int id = reader.getInt(0);
-            int ids = reader.getInt("id");
-            int dl = reader.getRecordLength();
-            String name = reader.get(1);
-            String names = reader.get("name");
-
-            System.out.printf(Locale.US,"%d %s %s",id, name,names);
-
-
-            System.out.printf("             Długość rekordu = %d ",dl);
-            System.out.println();
-
-        }
-        System.out.printf("%s",reader.getColumnLabels());
-        System.out.println();
-        System.out.println();
-        System.out.println();
-
-        //System.out.printf("%d",reader.getInt("nrdomu"));
-        System.out.println();
-
-
-    }
 }
