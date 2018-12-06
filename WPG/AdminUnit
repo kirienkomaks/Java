@@ -18,6 +18,7 @@ public class AdminUnit {
         }
     }
     public String toString() {
-        return name+"  "+adminLevel+"   "+population+"    "+area+"    "+density+"    "+par;
+
+        return name+"  "+adminLevel+"   "+population+"    "+area+"    "+density+"    "+par+"  bbox =  "+bbox.toString();
     }
 }
