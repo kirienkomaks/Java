@@ -6,56 +6,63 @@ import java.util.Locale;
 
 public class AdminUnitList {
     List<AdminUnit> units = new ArrayList<>();
+    HashMap<AdminUnit, Long> mapa = new HashMap<>();
     public void read(String filename) throws IOException {
         CSVReader reader = new CSVReader(filename,",",true);
+
+        System.out.printf("%s",reader.getColumnLabels());
+        System.out.println();
+
+
         while(reader.next()) {
             AdminUnit adm = new AdminUnit();
+
+            int adl = reader.isMissing(3)?reader.getInt(3):0;
             String name = reader.get("name");
-            int adl = !reader.isMissing("admin_level")?reader.getInt("admin_level"):0;
-            double pop = !reader.isMissing("population")?reader.getDouble("population"):0;
-            double area = reader.getDouble("area");
-            double density = !reader.isMissing("density")?reader.getDouble("density"):0;
+
+            double pop = reader.isMissing("population")?reader.getDouble("population"):0;
+            double area = reader.isMissing(5)?reader.getDouble(5):1;
+            double density = reader.isMissing(6)?reader.getDouble(6):0;
+            long parrent = reader.isMissing("parent")?reader.getLong("parent"):0;
             adm.name=name;
             adm.adminLevel=adl;
             adm.population=pop;
             adm.area=area;
             adm.density=density;
+            adm.par=parrent;
+            mapa.put(adm,parrent);
             units.add(adm);
+
+
         }
+
     }
 
-
-    /**
-     * Wypisuje zawartość korzystając z AdminUnit.toString()
-     * @param out
-     */
+    void getmap(long key){
+        System.out.print(mapa.get(key));
+    }
     void list(PrintStream out){
         for (int i=0;i<units.size();i++){
             out.printf(units.toString());
+            System.out.println();
         }
 
     }
-    /**
-     * Wypisuje co najwyżej limit elementów począwszy od elementu o indeksie offset
-     * @param out - strumień wyjsciowy
-     * @param offset - od którego elementu rozpocząć wypisywanie
-     * @param limit - ile (maksymalnie) elementów wypisać
-     */
+
     void list(PrintStream out,int offset, int limit ){
         int il=0;
         for (int i=offset;i<units.size();i++) {
             if(il<limit){
-                out.printf(units.toString());
+                out.printf(units.get(i).toString());
+                System.out.println();
             }
+            else
+            {break;}
+            il++;
         }
     }
 
-    /**
-     * Zwraca nową listę zawierającą te obiekty AdminUnit, których nazwa pasuje do wzorca
-     * @param pattern - wzorzec dla nazwy
-     * @param regex - jeśli regex=true, użyj finkcji String matches(); jeśli false użyj funkcji contains()
-     * @return podzbiór elementów, których nazwy spełniają kryterium wyboru
-     */
+
     AdminUnitList selectByName(String pattern, boolean regex){
         AdminUnitList ret = new AdminUnitList();
         for (int i=0;i<units.size();i++) {
@@ -74,9 +81,8 @@ public class AdminUnitList {
         PrintStream pw = new PrintStream(System.out);
         AdminUnitList lista = new AdminUnitList();
         lista.read("admin-units.csv");
-        lista.list(pw);
-
+        lista.list(pw,0,10);
+        System.out.printf(String.valueOf(lista.mapa));
     }
 }
-
 
