@@ -1,14 +1,23 @@
-
-public class AdminUnit extends AdminUnitList{
+import java.util.List;
+public class AdminUnit {
     String name;
     int adminLevel;
     double population;
     double area;
     double density;
+    long par;
     AdminUnit parent;
     BoundingBox bbox = new BoundingBox();
-
+    List<AdminUnit> children;
+    public void fixMissingValues(){
+        if(density==0.0){
+            this.density=parent.density;
+        }
+        if (population==0.0){
+            this.population=this.area*this.density;
+        }
+    }
     public String toString() {
-        return name+"  "+adminLevel+"   "+population+"    "+area+"    "+density;
+        return name+"  "+adminLevel+"   "+population+"    "+area+"    "+density+"    "+par;
     }
 }
