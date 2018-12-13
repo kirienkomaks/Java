@@ -1,9 +1,7 @@
 import java.io.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
+import java.util.*;
 import java.lang.Math;
+import java.util.function.Predicate;
 
 public class AdminUnitList {
     List<AdminUnit> units = new ArrayList<>();
@@ -82,6 +80,7 @@ public class AdminUnitList {
     void getmap(long key){
         System.out.print(mapa.get(key));
     }
+
     void list(PrintStream out){
         for (int i=0;i<units.size();i++){
             out.printf(units.toString());
@@ -117,12 +116,61 @@ public class AdminUnitList {
         // jeżeli nazwa jednostki pasuje do wzorca dodaj do ret
         return ret;
     }
+    class Sortname implements Comparator<AdminUnit> {
+            public int compare(AdminUnit x, AdminUnit y){
+                return x.name.compareTo(y.name);
+            }
 
+        }
+
+    class Sortarea implements Comparator<AdminUnit> {
+        public int compare(AdminUnit x, AdminUnit y){
+           return Double.compare(x.area,y.area);
+        }
+
+    }
+    AdminUnitList sortInplaceByName(){
+           units.sort(new Sortname()) ;
+           return this;
+
+
+    }
+
+    AdminUnitList sortInplaceByArea(){
+        units.sort(new Sortarea()) ;
+        return this;
+    }
+
+    AdminUnitList sortInplace(Comparator<AdminUnit> cmp){
+        //
+
+        return this;
+    }
+    AdminUnitList sort(Comparator<AdminUnit> cmp){
+        List<AdminUnit> sorted = new ArrayList<>();
+        for (int i=0;i<units.size();i++){
+            sorted.add((AdminUnit) units);
+        }
+        // Tworzy wyjściową listę
+        // Kopiuje wszystkie jednostki
+        // woła sortInPlace
+        return (AdminUnitList) sorted;
+    }
+    AdminUnitList filter(Predicate<AdminUnit> pred){
+        AdminUnitList filter = new AdminUnitList();
+        for (int i=0;i<units.size();i++){
+            AdminUnit t = units.get(i);
+            if (pred.test(t)) filter.units.add(t);
+        }
+        return filter;
+    }
     public static void main(String[] args) throws IOException {
         PrintStream pw = new PrintStream(System.out);
         AdminUnitList lista = new AdminUnitList();
         lista.read("admin-units.csv");
         lista.list(pw,0,10);
-        System.out.printf(String.valueOf(lista.mapa));
+        lista.sortInplaceByArea();
+        lista.list(pw,0,10);
+        //System.out.printf(String.valueOf(lista.mapa));
     }
 }
