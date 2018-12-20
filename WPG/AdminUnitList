@@ -117,21 +117,21 @@ public class AdminUnitList {
         return ret;
     }
     class Sortname implements Comparator<AdminUnit> {
-            public int compare(AdminUnit x, AdminUnit y){
-                return x.name.compareTo(y.name);
-            }
-
+        public int compare(AdminUnit x, AdminUnit y){
+            return x.name.compareTo(y.name);
         }
+
+    }
 
     class Sortarea implements Comparator<AdminUnit> {
         public int compare(AdminUnit x, AdminUnit y){
-           return Double.compare(x.area,y.area);
+            return Double.compare(x.area,y.area);
         }
 
     }
     AdminUnitList sortInplaceByName(){
-           units.sort(new Sortname()) ;
-           return this;
+        units.sort(new Sortname()) ;
+        return this;
 
 
     }
@@ -164,12 +164,43 @@ public class AdminUnitList {
         }
         return filter;
     }
+    AdminUnitList filter(Predicate<AdminUnit> pred, int limit){
+        if(units.size()>0) {
+            AdminUnitList filter = new AdminUnitList();
+            int rozm=0;
+            for (int i = 0; i < units.size(); i++) {
+                AdminUnit t = units.get(i);
+                if (pred.test(t) && rozm<limit) {
+                    filter.units.add(t);
+                    rozm++;
+                }
+            }
+            return filter;
+        }  else {throw new RuntimeException("Not implemented yet");}
+    }
+    AdminUnitList filter(Predicate<AdminUnit> pred, int offset, int limit) {
+        if(units.size()>0) {
+            AdminUnitList filter = new AdminUnitList();
+            int rozm=0;
+            int pocz=0;
+            for (int i = 0; i < units.size(); i++) {
+                AdminUnit t = units.get(i);
+                if (pred.test(t) && rozm<limit && pocz>offset) {
+                    filter.units.add(t);
+                    pocz++;
+                    rozm++;
+                }
+            }
+            return filter;
+        }  else {throw new RuntimeException("Not implemented yet");}
+    }
+
     public static void main(String[] args) throws IOException {
         PrintStream pw = new PrintStream(System.out);
         AdminUnitList lista = new AdminUnitList();
         lista.read("admin-units.csv");
         lista.list(pw,0,10);
-        lista.sortInplaceByArea();
+        lista.sortInplaceByName();
         lista.list(pw,0,10);
         //System.out.printf(String.valueOf(lista.mapa));
     }
