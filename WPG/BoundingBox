@@ -1,15 +1,13 @@
+import static java.lang.Math.sqrt;
+
 public class BoundingBox {
     double xmin;
     double ymin;
     double xmax;
     double ymax;
+    boolean empty = false;
 
 
-    /**
-     * Powiększa BB tak, aby zawierał punkt (x,y)
-     * @param x - współrzędna x
-     * @param y - współrzędna y
-     */
     void addPoint(double x, double y){
         if(x>xmax && y>ymax){
             this.xmax=x;
@@ -33,22 +31,12 @@ public class BoundingBox {
         }
     }
 
-    /**
-     * Sprawdza, czy BB zawiera punkt (x,y)
-     * @param x
-     * @param y
-     * @return
-     */
+
     boolean contains(double x, double y){
         if (x<xmax && y<ymax && x>xmin && y>ymin) return true;
         return false;
     }
 
-    /**
-     * Sprawdza czy dany BB zawiera bb
-     * @param bb
-     * @return
-     */
     boolean contains(BoundingBox bb){
         if (bb.xmax<this.xmax && bb.ymax<this.ymax && bb.xmin>this.xmin && bb.ymin>this.ymin) return true;
         return false;
@@ -60,32 +48,37 @@ public class BoundingBox {
      * @return
      */
     boolean intersects(BoundingBox bb){
+        if((empty) || (bb.empty)) {
+            return false; }
+        if(contains(bb) || bb.contains(this)) {
+            return true; }
+        if(contains(bb.xmin, bb.ymin) || contains(bb.xmax, bb.ymax)) {
+            return true; }
+        if(bb.contains(xmin, ymin) || bb.contains(xmax, ymax)) {
+            return true; }
 
         return false;
     }
-    /**
-     * Powiększa rozmiary tak, aby zawierał bb oraz poprzednią wersję this
-     * @param bb
-     * @return
-     */
-    BoundingBox add(BoundingBox bb){
 
-        return this;
+    BoundingBox add(BoundingBox bb){
+        if(empty) {
+            return bb;
+        } else {
+            if(xmin > bb.xmin) { xmin = bb.xmin; }
+            if(xmax < bb.xmax) { xmax = bb.xmax; }
+
+            if(ymin > bb.ymin) { ymin = bb.ymin; }
+            if(ymax < bb.ymax) { ymax = bb.ymax; }
+
+            return this;
+        }
     }
-    /**
-     * Sprawdza czy BB jest pusty
-     * @return
-     */
+
     boolean isEmpty(){
         if (xmin==Double.NaN && ymin==Double.NaN && xmax==Double.NaN && ymax==Double.NaN)return true;
         return false;
     }
 
-    /**
-     * Oblicza i zwraca współrzędną x środka
-     * @return if !isEmpty() współrzędna x środka else wyrzuca wyjątek
-     * (sam dobierz typ)
-     */
     double getCenterX(){
         double cx;
         if (!isEmpty()) {
@@ -94,11 +87,7 @@ public class BoundingBox {
         }
         else throw new RuntimeException("Not implemented");
     }
-    /**
-     * Oblicza i zwraca współrzędną y środka
-     * @return if !isEmpty() współrzędna y środka else wyrzuca wyjątek
-     * (sam dobierz typ)
-     */
+
     double getCenterY(){
         double cy;
         if (!isEmpty()) {
@@ -117,7 +106,14 @@ public class BoundingBox {
      * (ang. haversine formula)
      */
     double distanceTo(BoundingBox bbx){
-        throw new RuntimeException("Not implemented");
+        double odl;
+
+        if (!isEmpty() && !bbx.isEmpty()) {
+            double xp=(getCenterX()-bbx.getCenterX());
+            double yp=getCenterY()-bbx.getCenterY();
+            odl=sqrt((xp*xp)+(yp*yp));
+            return odl;
+        }else throw new RuntimeException("Not implemented");
     }
 
     public String toString(){
