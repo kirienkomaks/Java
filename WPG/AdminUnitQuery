@@ -18,28 +18,21 @@ public class AdminUnitQuery {
     return this;
     }
 
-    /**
-     * Wykonuje operację p = p and pred
-     * @param pred
-     * @return this
-     */
-    AdminUnitQuery and(Predicate<AdminUnit> pred){
-    ...
-    }
-    /**
-     * Wykonuje operację p = p or pred
-     * @param pred
-     * @return this
-     */
-    AdminUnitQuery or(Predicate<AdminUnit> pred){
 
+    AdminUnitQuery and(Predicate<AdminUnit> pred){
+    this.p=p.and(pred);
+    return this;
+    }
+
+    AdminUnitQuery or(Predicate<AdminUnit> pred){
+    this.p=p.or(pred);
+    return this;
     }
 
     AdminUnitQuery sort(Comparator<AdminUnit> cmp){
     this.cmp=cmp;
     return this;
     }
-
 
     AdminUnitQuery limit(int limit){
     this.limit=limit;
@@ -51,12 +44,9 @@ public class AdminUnitQuery {
     return this;
     }
 
-    /**
-     * Wykonuje zapytanie i zwraca wynikową listę
-     * @return przefiltrowana i opcjonalnie posortowana lista (uwzględniamy także offset/limit)
-     */
     AdminUnitList execute(){
-
+    src.filter(p,limit,offset);
+    src.sortInplace(cmp);
     return src;
     }
 }
