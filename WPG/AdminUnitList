@@ -135,14 +135,29 @@ public class AdminUnitList {
 
 
     }
+    AdminUnitList sortInplaceByArea() {
+        new Comparator<AdminUnit>() {
+            public int compare(AdminUnit x, AdminUnit y) {
+                if(x.area > y.area) { return -1; }
+                if(x.area < y.area) { return 1; }
+                else return 0;
+            }
+        };
+        return this;
+    }
 
-    AdminUnitList sortInplaceByArea(){
-        units.sort(new Sortarea()) ;
+    AdminUnitList sortInplaceByPopulation() {
+        units.sort(
+                (AdminUnit unit1, AdminUnit unit2) -> {
+                    if(unit1.population > unit2.population) { return -1; }
+                    if(unit1.population < unit2.population) { return 1; }
+                    else return 0;
+                }
+        );
         return this;
     }
 
     AdminUnitList sortInplace(Comparator<AdminUnit> cmp){
-        //
 
         return this;
     }
@@ -151,9 +166,7 @@ public class AdminUnitList {
         for (int i=0;i<units.size();i++){
             sorted.add((AdminUnit) units);
         }
-        // Tworzy wyjściową listę
-        // Kopiuje wszystkie jednostki
-        // woła sortInPlace
+
         return (AdminUnitList) sorted;
     }
     AdminUnitList filter(Predicate<AdminUnit> pred){
@@ -201,6 +214,7 @@ public class AdminUnitList {
         lista.read("admin-units.csv");
         lista.list(pw,0,10);
         lista.sortInplaceByName();
+        //lista.sortInplaceByArea();
         lista.list(pw,0,10);
         //System.out.printf(String.valueOf(lista.mapa));
         AdminUnitQuery query = new AdminUnitQuery()
