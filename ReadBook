@@ -1,0 +1,76 @@
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Main2 {
+    static String readFile(String path, Charset encoding) //funkcja wczytujaca plik z podaniem Charsetu
+            throws IOException
+    {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
+    }
+
+
+    static void insertLetter(Character letter, Map<Character, Integer> map){
+
+        if (!map.containsKey(letter)){
+            map.put(letter, 1);
+        } else {
+            Integer val = map.get(letter);
+            map.put(letter, val+1);
+        }
+    }
+
+
+    public static void main(String[] args) {
+
+        try {
+            String tekst = readFile("w-pustyni.txt", Charset.forName("cp1250")); //wczytanie pliku
+
+            tekst = tekst.replace(",", "") //usuniecie wszystkich znakow specjalnych i wielokrotnych bialych znakow
+                    .replace(".", "")
+                    .replace("?", "")
+                    .replace("!", "")
+                    .replace("-", "")
+                    .replace("—", "")
+                    .replace(":", "")
+                    .replace("„", "")
+                    .replace("”", "")
+                    .replace("…","")
+                    .replace("(", "")
+                    .replace(")", "")
+                    .replaceAll("\\s", " ")
+                    .toLowerCase();
+
+            String [] podzielone = tekst.split("\\s+");
+
+            Map<String,Integer> mapa_slow = new HashMap<>();
+
+
+            Map<Character, Integer> mapa_liter = new HashMap<>();
+            //zliczanie pierwszych liter
+            for (String word : podzielone) { //zliczanie wszystkich slow
+                insertLetter(word.charAt(0), mapa_liter);
+            }
+
+            Map.Entry<Character, Integer> maxLiter = null;
+
+            for (Map.Entry<Character, Integer> entry : mapa_liter.entrySet()) {
+                if (maxLiter == null || entry.getValue().compareTo(maxLiter.getValue()) > 0) {
+                    maxLiter = entry;
+                }
+            }
+
+            System.out.println("Najwiecej jest slow zaczynajacych sie na litere: '" + maxLiter.getKey() + "', il. wystapien - " + maxLiter.getValue());
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+}
