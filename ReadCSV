@@ -1,0 +1,62 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        String csvFile = "pracownicy-geo-agh.csv";
+        BufferedReader br = null;
+        String line = "";
+        String cvsSplitBy = ";";
+        int kobiety = 0;
+        int faceci = 0;
+
+        try {
+
+            br = new BufferedReader(new FileReader(csvFile));
+            while ((line = br.readLine()) != null) {
+
+                //separator
+                String[] osoba = line.split(cvsSplitBy);
+                if (osoba[2].endsWith("a") || osoba[2].endsWith("a ")){ //osoba[2] to imie
+                    kobiety++;
+                }
+                else{
+                    faceci++;
+                } //zlicza kobiety i mezczyzn
+
+                if(osoba[2].endsWith("a ") || osoba[2].endsWith("a") && osoba[4] == "C4"){ //wypisuje kobiety pracujace w C4
+                    System.out.println("Numer: " + osoba[0] + "  Tytul: " + osoba[1] + " Imie:" + osoba[2] + " Nazwisko: " + osoba[3] + " Pawilon: " + osoba[4]);
+                }
+
+                if(osoba[6].length() > 6){ //wiecej niz jeden numer, czyli wiecej niz 6 znakow
+                    System.out.println("Numer: " + osoba[0] + " Tytul: " + osoba[1] + "Imie: " + osoba[2] + "Nazwisko: " + osoba[3] + " Pawilon: " + osoba[4] + " Pokoj: " + osoba[5] + " Numer: " + osoba[6] + " mail: " + osoba[7]);
+
+                }
+
+            }
+            System.out.println("Jest kobiet: " + kobiety); //wypisuje liczbe kobiet
+            System.out.println("Jest mezczyzn: " + faceci); //wypisuje liczbe mezczyzn
+
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+}
